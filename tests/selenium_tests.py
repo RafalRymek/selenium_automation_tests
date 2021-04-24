@@ -26,7 +26,7 @@ class MySeleniumTests(unittest.TestCase):
     sign_in_button = (By.XPATH, "//a[@class='login']")
     email_field = (By.XPATH, "//input[@class='is_required validate account_input form-control']")
     create_submit_button = (By.XPATH, "//button[@class='btn btn-default button button-medium exclusive']")
-    create_account_form = (By.XPATH, "//form[@id='account-creation_form']")
+    create_account = (By.XPATH, "//h1[normalize-space()='Create an account']")
     first_name = (By.XPATH, "//input[@id='customer_firstname']")
     last_name = (By.XPATH, "//input[@id='customer_lastname']")
     password = (By.XPATH, "//input[@type='password']")
@@ -53,8 +53,6 @@ class MySeleniumTests(unittest.TestCase):
     order_summary_quantity = (By.XPATH, "//input[@name='quantity_5_19_0_0_hidden']")
 
     def setUp(self):
-        # chrome_options = webdriver.ChromeOptions()
-        # chrome_options.headless = True
         self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
         self.driver.implicitly_wait(3)
         self.driver.set_window_size(1440, 900)
@@ -71,8 +69,8 @@ class MySeleniumTests(unittest.TestCase):
         self.driver.find_element(*self.email_field).send_keys(self.USER_EMAIL)
         self.driver.find_element(*self.create_submit_button).click()
         self.driver.implicitly_wait(3)
-        self.driver.find_element(*self.create_account_form)
-        assert_that(*self.create_account_form, is_not(none))
+        self.driver.find_element(*self.create_account)
+        assert_that(*self.create_account, is_not(none))
         self.driver.find_element(*self.first_name).send_keys("Tester")
         self.driver.find_element(*self.last_name).send_keys("Testers")
         assert_that(*self.address_first_name, is_not(none()))
@@ -100,7 +98,6 @@ class MySeleniumTests(unittest.TestCase):
         self.driver.execute_script("window.scrollTo(20, document.body.scrollHeight);")
         first_dress = self.driver.find_elements(*self.product_container)[0]
         ActionChains(self.driver).move_to_element(first_dress).perform()
-        self.driver.implicitly_wait(3)
         self.driver.find_element(*self.add_to_cart).click()
         self.driver.find_element(*self.close_pop_up).click()
         cart_icon = self.driver.find_element(*self.shopping_cart)
