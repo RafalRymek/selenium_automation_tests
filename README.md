@@ -18,4 +18,4 @@ hamcrest
 ## Execution:
 
 to run selenium tests with pytest  
-`python3 tests/test_selenium.py`
+`python3 tests/selenium_tests.py`
