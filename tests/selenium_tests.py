@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class MySeleniumTests(unittest.TestCase):
@@ -52,13 +52,11 @@ class MySeleniumTests(unittest.TestCase):
     button_order_cart = (By.XPATH, "//a[@id='button_order_cart']")
     quantity = (By.XPATH, "//span[@class='quantity-formated']")
     order_summary_quantity = (By.XPATH, "//input[@name='quantity_5_19_0_0_hidden']")
-    first_result = (By.XPATH, "//li[@class='ajax_block_product col-xs-12 col-sm-6 col-md-4 first-in-line "
-                              "first-item-of-tablet-line first-item-of-mobile-line']")
 
     def setUp(self):
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')
-        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+        # chrome_options = webdriver.ChromeOptions()
+        # chrome_options.add_argument('--headless')
+        self.driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
         self.driver.implicitly_wait(3)
         self.driver.set_window_size(1440, 900)
         self.driver.get(self.BASE_URL)
@@ -73,8 +71,7 @@ class MySeleniumTests(unittest.TestCase):
         self.driver.find_element(*self.sign_in_button).click()
         self.driver.find_element(*self.email_field).send_keys(self.USER_EMAIL)
         self.driver.find_element(*self.create_submit_button).click()
-        self.driver.find_element(*self.create_account)
-        assert_that(*self.create_account, is_not(none))
+        WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(self.first_name))
         self.driver.find_element(*self.first_name).send_keys("Tester")
         self.driver.find_element(*self.last_name).send_keys("Testers")
         assert_that(*self.address_first_name, is_not(none()))
@@ -97,10 +94,11 @@ class MySeleniumTests(unittest.TestCase):
     def test_add_to_cart(self):
         self.driver.find_element(*self.search_field).send_keys(self.DRESS_INPUT)
         self.driver.find_element(*self.submit_button).click()
-        first_dress = self.driver.find_element(*self.first_result)
-        time.sleep(1)
+        first_dress = self.driver.find_elements(*self.product_container)[0]
+        time.sleep(2)
         ActionChains(self.driver).move_to_element(first_dress).perform()
-        self.driver.find_element(*self.add_to_cart).click()
+        self.driver.save_screenshot("add.png")
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(self.add_to_cart)).click()
         self.driver.find_element(*self.close_pop_up).click()
         cart_icon = self.driver.find_element(*self.shopping_cart)
         ActionChains(self.driver).move_to_element(cart_icon).perform()
